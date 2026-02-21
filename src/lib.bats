@@ -5,6 +5,7 @@
 #use array as A
 #use promise as P
 #use wasm.bats-packages.dev/bridge as B
+#use result as R
 
 #pub fun open
   (input_node_id: int): $P.promise(int, $P.Pending)
@@ -20,7 +21,7 @@
 #pub fun file_read
   {l:agz}{n:pos}
   (handle: int, file_offset: int,
-   out: !$A.arr(byte, l, n), len: int n): int
+   out: !$A.arr(byte, l, n), len: int n): $R.result(int)
 
 #pub fun close
   (handle: int): void
