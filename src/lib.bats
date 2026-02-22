@@ -21,7 +21,7 @@
 #pub fun file_read
   {l:agz}{n:pos}
   (handle: int, file_offset: int,
-   out: !$A.arr(byte, l, n), len: int n): $R.result(int)
+   out: !$A.arr(byte, l, n), len: int n): $R.result(int, int)
 
 #pub fun close
   (handle: int): void
