@@ -8,7 +8,9 @@
 #use result as R
 
 #pub fun open
-  (input_node_id: int): $P.promise(int, $P.Pending)
+  {li:agz}{ni:pos}
+  (input_node_id: !$A.borrow(byte, li, ni), id_len: int ni)
+  : $P.promise(int, $P.Pending)
 
 #pub fun get_size(): int
 
@@ -26,11 +28,8 @@
 #pub fun close
   (handle: int): void
 
-implement open(input_node_id) = let
-  val @(p, r) = $P.create<int>()
-  val id = $P.stash(r)
-  val () = $B.file_open(input_node_id, id)
-in p end
+implement open{li}{ni}(input_node_id, id_len) =
+  $B.file_open(input_node_id, id_len)
 
 implement get_size() = $B.file_size()
 
