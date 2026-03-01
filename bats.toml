@@ -1,3 +1,9 @@
 [package]
 name = "wasm.bats-packages.dev/file-input"
 kind = "lib"
+
+[dependencies]
+"wasm.bats-packages.dev/bridge" = ""
+"array" = ""
+"promise" = ""
+"result" = ""
