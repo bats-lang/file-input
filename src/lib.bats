@@ -7,6 +7,9 @@
 #use wasm.bats-packages.dev/bridge as B
 #use result as R
 
+staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
+staload BS = "wasm.bats-packages.dev/bridge/src/stash.sats"
+
 #pub fun open
   {li:agz}{ni:pos}
   (input_node_id: !$A.borrow(byte, li, ni), id_len: int ni)
@@ -29,15 +32,15 @@
   (handle: int): void
 
 implement open{li}{ni}(input_node_id, id_len) =
-  $B.file_open(input_node_id, id_len)
+  $BF.file_open(input_node_id, id_len)
 
-implement get_size() = $B.file_size()
+implement get_size() = $BF.file_size()
 
-implement get_name_len() = $B.file_name_len()
+implement get_name_len() = $BF.file_name_len()
 
-implement get_name{n}(len) = $B.file_name(len)
+implement get_name{n}(len) = $BF.file_name(len)
 
 implement file_read{l}{n}(handle, file_offset, out, len) =
-  $B.file_read(handle, file_offset, out, len)
+  $BF.file_read(handle, file_offset, out, len)
 
-implement close(handle) = $B.file_close(handle)
+implement close(handle) = $BF.file_close(handle)
