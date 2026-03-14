@@ -31,6 +31,10 @@ staload BS = "wasm.bats-packages.dev/bridge/src/stash.sats"
 #pub fun close
   (handle: int): void
 
+#pub fun file_store
+  {l:agz}{n:pos}
+  (!$A.borrow(byte, l, n), int n): int
+
 implement open{li}{ni}(input_node_id, id_len) =
   $BF.file_open(input_node_id, id_len)
 
@@ -44,3 +48,5 @@ implement file_read{l}{n}(handle, file_offset, out, len) =
   $BF.file_read(handle, file_offset, out, len)
 
 implement close(handle) = $BF.file_close(handle)
+
+implement file_store{l}{n}(data, len) = $BF.file_store(data, len)
