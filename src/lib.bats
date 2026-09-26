@@ -13,7 +13,7 @@ staload BS = "wasm.bats-packages.dev/bridge/src/stash.sats"
 #pub fun open
   {li:agz}{ni:pos}
   (input_node_id: !$A.borrow(byte, li, ni), id_len: int ni)
-  : $P.promise(int, $P.Pending)
+  : $P.promise(Int, $P.Pending)
 
 #pub fun get_size(): [v:int] int v
 
