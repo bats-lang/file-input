@@ -9,8 +9,10 @@
 
 staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
 
-(* A file of n bytes *)
-#pub typedef infile(n:int) = $BF.infile(n)
+(* A file of n bytes, held by JS. It is linear: claimed once, borrowed by
+   size, file_read and idb_put, and consumed by close, which lets JS
+   release its bytes; a closed file cannot be read *)
+#pub vtypedef infile(n:int) = $BF.infile(n)
 
 (* Reads the file picked in the file input with that id; the promise
    resolves with a handle to claim *)
@@ -23,12 +25,12 @@ staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
 #pub fun claim
   (handle: Int): $R.option([n:nat] infile(n))
 
-#pub fun size {n:nat} (f: infile(n)): int n
+#pub fun size {n:nat} (f: !infile(n)): int n
 
 (* out[0, len) := the file's bytes [file_offset, file_offset + len) *)
 #pub fun file_read
   {n:nat}{o,k:nat | o + k <= n}{l:agz}{ow:addr}{m:pos | k <= m}
-  (f: infile(n), file_offset: int o,
+  (f: !infile(n), file_offset: int o,
    out: !$A.arrx(byte, l, m, ow), len: int k): void
 
 #pub fun close {n:nat} (f: infile(n)): void
@@ -42,7 +44,7 @@ staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
    wasm memory; the promise resolves with 0, or -1 on failure *)
 #pub fun idb_put
   {lk:agz}{nk:pos}{n:nat}
-  (key: !$A.borrow(byte, lk, nk), key_len: int nk, f: infile(n))
+  (key: !$A.borrow(byte, lk, nk), key_len: int nk, f: !infile(n))
   : $P.promise(Int, $P.Pending)
 
 (* The bytes idb_put stored under key, as a file: the promise resolves
