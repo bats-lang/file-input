@@ -27,9 +27,9 @@ staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
 
 (* out[0, len) := the file's bytes [file_offset, file_offset + len) *)
 #pub fun file_read
-  {n:nat}{o,k:nat | o + k <= n}{l:agz}{m:pos | k <= m}
+  {n:nat}{o,k:nat | o + k <= n}{l:agz}{ow:addr}{m:pos | k <= m}
   (f: infile(n), file_offset: int o,
-   out: !$A.arr(byte, l, m), len: int k): void
+   out: !$A.arrx(byte, l, m, ow), len: int k): void
 
 #pub fun close {n:nat} (f: infile(n)): void
 
@@ -63,7 +63,7 @@ implement claim(handle) = $BF.file_claim(handle)
 
 implement size{n}(f) = $BF.file_size(f)
 
-implement file_read{n}{o,k}{l}{m}(f, file_offset, out, len) =
+implement file_read{n}{o,k}{l}{ow}{m}(f, file_offset, out, len) =
   $BF.file_read(f, file_offset, out, len)
 
 implement close{n}(f) = $BF.file_close(f)
