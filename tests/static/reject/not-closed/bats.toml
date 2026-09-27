@@ -1,7 +1,0 @@
-[package]
-name = "not-closed"
-kind = "lib"
-
-[dependencies]
-"array" = ""
-"wasm.bats-packages.dev/file-input" = ""

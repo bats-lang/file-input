@@ -1,7 +1,0 @@
-[package]
-name = "read-after-close"
-kind = "lib"
-
-[dependencies]
-"array" = ""
-"wasm.bats-packages.dev/file-input" = ""
