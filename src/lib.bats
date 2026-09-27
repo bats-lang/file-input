@@ -38,6 +38,24 @@ staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
   {l:agz}{n:pos}
   (data: !$A.borrow(byte, l, n), len: int n): infile(n)
 
+(* Stores f's bytes in IndexedDB under key, without copying them through
+   wasm memory; the promise resolves with 0, or -1 on failure *)
+#pub fun idb_put
+  {lk:agz}{nk:pos}{n:nat}
+  (key: !$A.borrow(byte, lk, nk), key_len: int nk, f: infile(n))
+  : $P.promise(Int, $P.Pending)
+
+(* The bytes idb_put stored under key, as a file: the promise resolves
+   with a handle to claim (none when nothing is stored there) *)
+#pub fun idb_get
+  {lk:agz}{nk:pos}
+  (key: !$A.borrow(byte, lk, nk), key_len: int nk)
+  : $P.promise(Int, $P.Pending)
+
+implement idb_put{lk}{nk}{n}(key, key_len, f) = $BF.file_idb_put(key, key_len, f)
+
+implement idb_get{lk}{nk}(key, key_len) = $BF.file_idb_get(key, key_len)
+
 implement open{li}{ni}(input_node_id, id_len) =
   $BF.file_open(input_node_id, id_len)
 
