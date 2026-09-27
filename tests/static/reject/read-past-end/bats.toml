@@ -1,0 +1,7 @@
+[package]
+name = "read-past-end"
+kind = "lib"
+
+[dependencies]
+"array" = ""
+"wasm.bats-packages.dev/file-input" = ""
