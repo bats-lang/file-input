@@ -8,45 +8,46 @@
 #use result as R
 
 staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
-staload BS = "wasm.bats-packages.dev/bridge/src/stash.sats"
 
+(* A file of n bytes *)
+#pub typedef infile(n:int) = $BF.infile(n)
+
+(* Reads the file picked in the file input with that id; the promise
+   resolves with a handle to claim *)
 #pub fun open
   {li:agz}{ni:pos}
   (input_node_id: !$A.borrow(byte, li, ni), id_len: int ni)
   : $P.promise(Int, $P.Pending)
 
-#pub fun get_size(): [v:int] int v
+(* The file an open promise resolved with, or none if the open failed *)
+#pub fun claim
+  (handle: Int): $R.option([n:nat] infile(n))
 
-#pub fun get_name_len(): [v:int] int v
+#pub fun size {n:nat} (f: infile(n)): int n
 
-#pub fun get_name
-  {n:pos | n <= 1048576}
-  (len: int n): [l:agz] $A.arr(byte, l, n)
-
+(* out[0, len) := the file's bytes [file_offset, file_offset + len) *)
 #pub fun file_read
-  {l:agz}{n:pos}
-  (handle: int, file_offset: int,
-   out: !$A.arr(byte, l, n), len: int n): $R.result(int, int)
+  {n:nat}{o,k:nat | o + k <= n}{l:agz}{m:pos | k <= m}
+  (f: infile(n), file_offset: int o,
+   out: !$A.arr(byte, l, m), len: int k): void
 
-#pub fun close
-  (handle: int): void
+#pub fun close {n:nat} (f: infile(n)): void
 
+(* A file holding data[0, len) *)
 #pub fun file_store
   {l:agz}{n:pos}
-  (!$A.borrow(byte, l, n), int n): int
+  (data: !$A.borrow(byte, l, n), len: int n): infile(n)
 
 implement open{li}{ni}(input_node_id, id_len) =
   $BF.file_open(input_node_id, id_len)
 
-implement get_size() = $BF.file_size()
+implement claim(handle) = $BF.file_claim(handle)
 
-implement get_name_len() = $BF.file_name_len()
+implement size{n}(f) = $BF.file_size(f)
 
-implement get_name{n}(len) = $BF.file_name(len)
+implement file_read{n}{o,k}{l}{m}(f, file_offset, out, len) =
+  $BF.file_read(f, file_offset, out, len)
 
-implement file_read{l}{n}(handle, file_offset, out, len) =
-  $BF.file_read(handle, file_offset, out, len)
-
-implement close(handle) = $BF.file_close(handle)
+implement close{n}(f) = $BF.file_close(f)
 
 implement file_store{l}{n}(data, len) = $BF.file_store(data, len)
