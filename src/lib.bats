@@ -8,6 +8,7 @@
 #use result as R
 
 staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
+staload BI = "wasm.bats-packages.dev/bridge/src/idb.sats"
 
 (* A file of n bytes, held by JS. It is linear: claimed once, borrowed by
    size, file_read and idb_put, and consumed by close, which lets JS
@@ -40,19 +41,25 @@ staload BF = "wasm.bats-packages.dev/bridge/src/file.sats"
   {l:agz}{n:pos}
   (data: !$A.borrow(byte, l, n), len: int n): infile(n)
 
+(* Whether a store was kept (bridge's stored: Stored or NotStored) *)
+#pub typedef stored = $BI.stored
+
+(* What a read found (bridge's file_lookup: FileFound of a file,
+   FileAbsent, or FileUnreadable when it could not be read) *)
+#pub vtypedef file_lookup = $BF.file_lookup
+
 (* Stores f's bytes in IndexedDB under key, without copying them through
-   wasm memory; the promise resolves with 0, or -1 on failure *)
+   wasm memory *)
 #pub fun idb_put
   {lk:agz}{nk:pos}{n:nat}
   (key: !$A.borrow(byte, lk, nk), key_len: int nk, f: !infile(n))
-  : $P.promise(Int, $P.Pending)
+  : $P.promise(stored, $P.Chained)
 
-(* The bytes idb_put stored under key, as a file: the promise resolves
-   with a handle to claim (none when nothing is stored there) *)
+(* The bytes idb_put stored under key, as a file *)
 #pub fun idb_get
   {lk:agz}{nk:pos}
   (key: !$A.borrow(byte, lk, nk), key_len: int nk)
-  : $P.promise(Int, $P.Pending)
+  : $P.promise(file_lookup, $P.Chained)
 
 implement idb_put{lk}{nk}{n}(key, key_len, f) = $BF.file_idb_put(key, key_len, f)
 
