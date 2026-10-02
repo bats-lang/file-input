@@ -26,9 +26,13 @@ staload BI = "wasm.bats-packages.dev/bridge/src/idb.sats"
   (input_node_id: !$A.borrow(byte, li, ni), id_len: int ni)
   : $P.promise(opened, $P.Chained)
 
-(* The file of a handle JS passed, or none *)
+(* A file JS holds, by its handle (bridge's file_handle): only
+   bridge's atoms give one; it is not a number *)
+#pub typedef file_handle = $BF.file_handle
+
+(* The file a handle names, or none *)
 #pub fun claim
-  (handle: Int): $R.option([n:nat] infile(n))
+  (handle: file_handle): $R.option([n:nat] infile(n))
 
 #pub fun size {n:nat} (f: !infile(n)): int n
 
