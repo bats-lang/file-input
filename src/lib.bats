@@ -15,14 +15,18 @@ staload BI = "wasm.bats-packages.dev/bridge/src/idb.sats"
    release its bytes; a closed file cannot be read *)
 #pub vtypedef infile(n:int) = $BF.infile(n)
 
-(* Reads the file picked in the file input with that id; the promise
-   resolves with a handle to claim *)
+(* What opening a file found (bridge's opened: Opened of a file,
+   NotOpened when none was picked, or OpenFailed when it could not be
+   read) *)
+#pub vtypedef opened = $BF.opened
+
+(* Reads the file picked in the file input with that id *)
 #pub fun open
   {li:agz}{ni:pos}
   (input_node_id: !$A.borrow(byte, li, ni), id_len: int ni)
-  : $P.promise(Int, $P.Pending)
+  : $P.promise(opened, $P.Chained)
 
-(* The file an open promise resolved with, or none if the open failed *)
+(* The file of a handle JS passed, or none *)
 #pub fun claim
   (handle: Int): $R.option([n:nat] infile(n))
 
